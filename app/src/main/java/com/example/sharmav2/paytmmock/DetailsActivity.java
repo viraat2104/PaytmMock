@@ -36,9 +36,15 @@ public class DetailsActivity extends DetailValidator implements OnClickListener,
     @Min(value=1, message = "amount must be greater than 0")
     EditText amount = null;
 
+
+    boolean check_validated = false;
     TextView txt_errors = null;
     protected Validator validator;
     protected boolean validated;
+
+    String merchant_name = null;
+    String merchant_number = null;
+    int pay_amount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class DetailsActivity extends DetailValidator implements OnClickListener,
         amount = (EditText) findViewById(R.id.amount);
         txt_errors = (TextView) findViewById(R.id.Error);
 
+
         Button button = (Button) findViewById(R.id.submit_details);
         button.setOnClickListener( new View.OnClickListener()
         {
@@ -58,18 +65,41 @@ public class DetailsActivity extends DetailValidator implements OnClickListener,
             }
         });
 
+        validate_fields();
+
     }
 
+    private void validate_fields() {
+        ArrayList <String> errors = new ArrayList<String>();
+         merchant_name = merc_name.getText().toString().trim();
+         merchant_number = merc_number.getText().toString().trim();
+         pay_amount = Integer.parseInt(amount.getText().toString().trim());
+
+        if(merchant_name.isEmpty() || merchant_name==null){
+            errors.add("Enter merchant name");
+            check_validated = false;
+        }
+        else if(merchant_number.length()<10){
+            errors.add("Enter valid mobile number");
+            check_validated = false;
+        }
+        else if(pay_amount<1){
+            errors.add("Minimum amount must be 1");
+            check_validated=false;
+        }
+        else {
+            check_validated = true;
+        }
+
+    }
 
 
     public void forwardDetails(View v){
         ArrayList ar = new ArrayList<>();
-        if (validated) {
+
+        if (check_validated) {
             // Our form is successfully validated, so, do your stuffs here...
             //Toast.makeText(this, "Form Successfully Validated", Toast.LENGTH_LONG).show();
-            String merchant_name = merc_name.getText().toString().trim();
-            String merchant_number = merc_number.getText().toString().trim();
-            int pay_amount = Integer.parseInt(amount.getText().toString().trim());
 
 
 
@@ -84,6 +114,10 @@ public class DetailsActivity extends DetailValidator implements OnClickListener,
             intent.putExtra("BUNDLE",args);
 
             startActivity(intent);
+        }
+        else {
+
+            //txt_errors.setText();
         }
 
 
